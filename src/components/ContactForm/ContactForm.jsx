@@ -1,13 +1,9 @@
 import css from './ContactForm.module.css'
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import { nanoid } from "nanoid";
-import { useId } from "react";
 import * as Yup from "yup";
-
-const initialValues = {
-  name: "",
-  number: "",
-};
+import { addContact } from '../../redux/contactsSlice';
+import { useDispatch } from 'react-redux';
 
 const ContactFormSchema = Yup.object().shape({
   name: Yup.string()
@@ -20,20 +16,29 @@ const ContactFormSchema = Yup.object().shape({
     .required("Required"),
 });
 
-const ContactForm = ({ addContact }) => {
-     const nameFieldId = useId();
-  const numberlFieldId = useId();
+const ContactForm = () => {
+  const dispatch = useDispatch();
+  const initialValues = { name: "", number: "" };
 
   const handleSubmit = (values, actions) => {
-    addContact({ ...values, id: nanoid(10) });
+    const newUser = {
+      id: nanoid(),
+      name: values.name,
+      number: values.number,
+    };
+    dispatch(addContact(newUser));
     actions.resetForm();
   };
 
+  const nameFieldId = 'name';
+  const numberlFieldId = 'number';
+
+
   return (
     <Formik
-      initialValues={initialValues}
-      onSubmit={handleSubmit}
-      validationSchema={ContactFormSchema}
+       validationSchema={ContactFormSchema}
+        initialValues={initialValues}
+        onSubmit={handleSubmit}
     >
       <Form className={css.formWrap}>
         <div className={css.inputWrap}>
